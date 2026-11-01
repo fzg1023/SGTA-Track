@@ -1,4 +1,4 @@
-# SGTA-Track: State-Gated Template Adaptation for RGB–Thermal Tracking
+# Decoupling Preference from Permission: State-Gated Template Maintenance for RGB–Thermal Tracking
 
 > **Status: the manuscript is under review.**
 > Model code, configurations, the main benchmark results, the trained weights and
@@ -7,7 +7,7 @@
 > Publication details and the final citation will be added after the review
 > process.
 
-SGTA-Track is an RGB–thermal (visible–thermal, RGB-T) single-object tracking framework built on a dual-stream ViT-B/16 CE-Adapter backbone. Its central idea is that *choosing among candidate templates* and *being allowed to update the template* are two different decisions: a single response score can rank candidates, but ranking alone does not establish whether any of them should be adopted. SGTA-Track therefore produces a **relative template preference** and a separate **update permission**, and uses the latter to regulate both candidate capture and periodic template replacement.
+
 
 This repository provides the training pipeline, testing/evaluation entry points, the cumulative ablation configurations of the manuscript, the trained checkpoints, the per-sequence predictions on five benchmarks, and the analysis tools used for the reported numbers. It supports LasHeR, VTUAV (short-term and long-term protocols), RGBT234, RGBT210, and GTOT.
 
@@ -38,25 +38,7 @@ Dataset roots are supplied through environment variables (see [Path Configuratio
 
 All four modules live in [`lib/models/bat/sgta_modules.py`](lib/models/bat/sgta_modules.py) and are wired in [`lib/models/bat/vit_ce_adapter.py`](lib/models/bat/vit_ce_adapter.py). The explicit temporal-prediction branch of the earlier prototype is not part of the method and stays disabled in every released configuration (`USE_TEMPORAL_MAMBA: False`, `USE_LEGACY_TEMPORAL_PREDICTOR: False`).
 
-## Method Framework
 
-### Overall architecture
-
-Dual-stream ViT-B/16 encoding, reliability-conditioned spatial enhancement in the last three encoder blocks, adaptive modality mixing before the prediction head, and state-gated template adaptation across calls.
-
-![SGTA-Track architecture](assets/figures/architecture.jpg)
-
-### Evidence-conditioned spatial enhancement (S)
-
-Template–search correlations produce reliability proxies and fusion weights; full-grid sequences are scanned in row-major and column-major order by Mamba-2 and blended back with a local gate.
-
-<img src="assets/figures/spatial_fusion.jpg" width="540" alt="Reliability-conditioned spatial fusion">
-
-### State-gated template adaptation (R and L)
-
-The controller pools current search evidence, reliability, and fusion weights, updates its liquid state with an input-dependent decay, and converts the resulting permission into two gated operations: periodic template replacement and candidate capture.
-
-<img src="assets/figures/state_gated_adaptation.jpg" width="620" alt="State-gated template adaptation">
 
 ## Repository Structure
 
